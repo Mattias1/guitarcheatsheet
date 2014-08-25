@@ -1,0 +1,3 @@
+[submodule "libs/mattycontrols"]
+	path = libs/mattycontrols
+	url = https://github.com/Mattias1/mattycontrols.git
