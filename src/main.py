@@ -8,8 +8,8 @@ from .settings import Settings, Pos, Size
 class Application(Frame):
     def __init__(self, settings, master=None):
         """The constructor"""
-        Frame.__init__(self, master)
-        master.title("Guitar theory helper")
+        frame_init(self, master)
+        master.title("Guitar cheat sheet")
 
         self.ctrl, self.shift, self.alt, self.superkey = False, False, False, False
 
@@ -24,6 +24,10 @@ class Application(Frame):
         self.canvas.width = settings.size.w
         self.canvas.height = settings.canvasheight
         self.canvas.locateInside(self, d=0)
+
+        self.dbKey = Db(self, ['one', 'two', 'three'])
+        self.dbKey.locateFrom(self.canvas, H_COPY_LEFT, V_BOTTOM)
+        self.dbKey.addLabel('Key: ')
 
         self.mainWindow = MainWin(settings, self)
         self.mainWindow.draw()
