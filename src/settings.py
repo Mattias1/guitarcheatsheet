@@ -7,12 +7,12 @@ class Settings():
     """The settings class"""
 
     def __init__(self):
-        self.size = Size(1111, 500)
+        self.size = Size(1111, 450)
+        self.canvasheight = 300
         self.offset = Pos(40, 20)
         self.necksize = Size(14, 6)
-        self.sqsize = Size(75, 50)
-        self.tuning = [Key.str2note(c) for c in ['E','B','G','D','A','E']]
-        self.canvasheight = 400
+        self.sqsize = Size(75, 40)
+        self.tuning = []
         self.font = ('Consolas', 16)
         self.colors = colors.Colors()
         self.fps_inv = 1/30                       # seconds per frame
