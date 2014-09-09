@@ -42,6 +42,9 @@ class Application(Frame):
         self.dbPreset.addLabel('Preset: ')
         self.dbPreset.onChange = lambda *args: self.onChangeAnything()
 
+        self.cbNotes = Cb(self, text='Display notes')
+        self.cbNotes.locateFrom(self.canvas, H_COPY_RIGHT, V_BOTTOM)
+
         self.btnQuit = Btn(self, text='Quit', command=self.quit)
         self.btnQuit.locateInside(self, H_RIGHT, V_BOTTOM)
 
