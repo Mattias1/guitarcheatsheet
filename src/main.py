@@ -44,6 +44,7 @@ class Application(Frame):
 
         self.cbNotes = Cb(self, text='Display notes')
         self.cbNotes.locateFrom(self.canvas, H_COPY_RIGHT, V_BOTTOM)
+        self.cbNotes.onChange = lambda *args: self.onChangeAnything()
 
         self.btnQuit = Btn(self, text='Quit', command=self.quit)
         self.btnQuit.locateInside(self, H_RIGHT, V_BOTTOM)
@@ -68,7 +69,8 @@ class Application(Frame):
         elif self.dbPreset.selectedValue == 'tenor ukelele':
             necksize = Size(14, 4)
             tuning = ['G#', 'Eb', 'B', 'F#']
-        self.mainWindow.change(self.dbKey.selectedValue, scale, necksize, [Key.str2note(c) for c in tuning])
+        displayNotes = self.cbNotes.checked
+        self.mainWindow.change(self.dbKey.selectedValue, scale, necksize, [Key.str2note(c) for c in tuning], displayNotes)
 
     def onMouseDown(self, event):
         self.mainWindow.onMouseDown(Pos(event.x, event.y), event.num)

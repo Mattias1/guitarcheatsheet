@@ -43,7 +43,6 @@ class Scale():
         n = (note + 12 - base) % 12
         for i, offset in enumerate(scale):
             if offset == n:
-                print("{}, str({}): {}".format(i, offset, Key.note2str(offset)))
                 return i + 1
         return -1
 

@@ -13,6 +13,7 @@ class Settings():
         self.necksize = Size(14, 6)
         self.sqsize = Size(75, 40)
         self.tuning = []
+        self.displayNotes = False
         self.font = ('Consolas', 16)
         self.colors = colors.Colors()
         self.fps_inv = 1/30                       # seconds per frame
