@@ -13,6 +13,7 @@ class Application(Frame):
         master.title('Guitar cheat sheet')
 
         self.ctrl, self.shift, self.alt, self.superkey = False, False, False, False
+        self.changeWithoutEvent = False
 
         self.canvas = Cnvs(master, bd=-2)
         self.canvas.bind('<Button>', self.onMouseDown)
@@ -49,18 +50,27 @@ class Application(Frame):
         self.btnQuit = Btn(self, text='Quit', command=self.quit)
         self.btnQuit.locateInside(self, H_RIGHT, V_BOTTOM)
 
+        self.chordCbs = []
+
         self.settings = settings
 
         self.mainWindow = MainWin(settings, self)
+        self.nrOfChords = 0
+        self.getChordDetails(0, 'c')
         self.onChangeAnything()
 
         self.master.after(int(self.settings.fps_inv * 1000), self.loop)
 
     def onChangeAnything(self):
         """This method is called whenever a control changed value"""
+        if self.changeWithoutEvent:
+            return
+        # Scale and key
         scale = Scale.default
         if self.dbScale.selectedValue == 'pentatonic':
             scale = Scale.pentatonic
+        key = self.dbKey.selectedValue
+        # Necksize and tuning
         necksize = Size(14, 6)
         tuning = ['E','B','G','D','A','E']
         if self.dbPreset.selectedValue == 'soprano ukelele':
@@ -69,8 +79,62 @@ class Application(Frame):
         elif self.dbPreset.selectedValue == 'tenor ukelele':
             necksize = Size(14, 4)
             tuning = ['G#', 'Eb', 'B', 'F#']
+        # Display notes
         displayNotes = self.cbNotes.checked
-        self.mainWindow.change(self.dbKey.selectedValue, scale, necksize, [Key.str2note(c) for c in tuning], displayNotes)
+        # Chords text and highlight
+        self.setChordsText()
+        highlightSet = set()
+        offset = Key.str2note(key)
+        for i in range(self.nrOfChords):
+            if self.chordCbs[i].checked:
+                highlightSet |= {(j + offset) % 12 for j in self.getChordDetails(i, key)[1]}
+
+        # Update the picture
+        self.mainWindow.change(key, scale, necksize, [Key.str2note(c) for c in tuning], highlightSet, displayNotes)
+
+    def getChordDetails(self, i, key):
+        chords = [
+            key,          [0, 4, 7],     # Major
+            key + 'm',    [0, 3, 7],     # Minor
+            key + 'dim',  [0, 3, 6],     # dim
+            key + '7',    [0, 4, 7, 10], # 7
+            key + 'm7',   [0, 3, 7, 10], # Minor 7
+            key + 'maj7', [0, 4, 7, 11]  # Major 7
+        ]
+        self.nrOfChords = len(chords) // 2
+        return (chords[2 * i], chords[2 * i + 1])
+
+    def setChordsText(self):
+        # Init
+        key = self.dbKey.selectedValue
+        copy = self.chordCbs
+        self.chordCbs = []
+
+        # Add the new cb's
+        for i in range(self.nrOfChords):
+            self.addChordCb(key, i, i==0)
+
+        # Check the previously checked cb's
+        if copy:
+            self.changeWithoutEvent = True
+            for i, cb in enumerate(self.chordCbs):
+                cb.checked = copy[i].checked
+            self.changeWithoutEvent = False
+
+    def addChordCb(self, key, i, first=False):
+        name, noteList = self.getChordDetails(i, key)
+        offset = Key.str2note(key)
+        text = '{}: '.format(name)
+        for i in noteList:
+            text += Key.note2str((i + offset) % 12) + ' '
+
+        cb = Cb(self, text=text)
+        if first:
+            cb.place(x=700, y=self.canvas.y + self.canvas.height + 10)
+        else:
+            cb.locateFrom(self.chordCbs[-1], H_COPY_LEFT, V_BOTTOM, 2)
+        cb.onChange = lambda *args: self.onChangeAnything()
+        self.chordCbs.append(cb)
 
     def onMouseDown(self, event):
         self.mainWindow.onMouseDown(Pos(event.x, event.y), event.num)
@@ -141,7 +205,7 @@ def main():
     """The main entrypoint for this application"""
     root = Tk()
     settings = Settings()
-    root.configure(bg=settings.colors.bg)
+    root.configure()
     root.geometry('{}x{}'.format(settings.size.w, settings.size.h))
     app = Application(settings, master=root)
     app.mainloop()

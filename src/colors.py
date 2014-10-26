@@ -4,7 +4,8 @@ class Colors():
     def __init__(self):
         self.bg = "#272822"
         self.text = "#eeeeee"
-        self.selectionbg = "#575852"
+        self.selectionbg = "#474842"
+        self.highlightbg = "#777872"
 
     def load(self):
         """Load all the colors from json file"""
