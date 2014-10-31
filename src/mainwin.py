@@ -40,11 +40,23 @@ class MainWin(Win):
                     if s != '-1':
                         self.drawString(s, cl.text, st.offset + (x * w, y * h) + (w // 2, h // 2), "center")
 
+        # Draw string names
+        sqWidth = 14
+        fadeWidth = 19
+        for i in range(st.necksize.h):
+            nr = st.tuning[i]
+            clr = cl.highlightbg if nr in self.highlightSet else cl.selectionbg
+            idx = self.key.getIndex(nr)
+            if idx > -1:
+                self.drawRect(clr, st.offset + (-sqWidth, i * h), Size(sqWidth, st.sqsize.h))
+                for j in range(fadeWidth):
+                    c = cl.hexlerp(cl.bg, clr, 1 - j / fadeWidth)
+                    self.drawRect(c, st.offset + (-sqWidth - j, i * h), Size(1, st.sqsize.h))
+            self.drawString(Key.note2str(nr), cl.text, st.offset + (-9, i * h + h // 2), "e")
+
         # Draw guitar neck
         for i in range(st.necksize.h + 1): # Horizontal lines
             self.drawLine(cl.text, st.offset + (-3, i * h), st.offset + (st.necksize.w * w, i * h))
-            if i < st.necksize.h:
-                self.drawString(Key.note2str(st.tuning[i]), cl.text, st.offset + (-9, i * h + h // 2), "e")
         for i in range(st.necksize.w + 1): # Vertical lines
             self.drawLine(cl.text, st.offset + (i * w, 0), st.offset + (i * w, st.necksize.h * h))
         self.drawLine(cl.text, st.offset + (-3, 0), st.offset + (-3, st.necksize.h * h))
