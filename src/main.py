@@ -46,6 +46,7 @@ class Application(Frame):
         self.cbNotes = Cb(self, text='Display notes')
         self.cbNotes.locateFrom(self.canvas, H_COPY_RIGHT, V_BOTTOM)
         self.cbNotes.onChange = lambda *args: self.onChangeAnything()
+        self.cbNotes.checked = settings.displayNotes
 
         self.btnQuit = Btn(self, text='Quit', command=self.quit)
         self.btnQuit.locateInside(self, H_RIGHT, V_BOTTOM)
