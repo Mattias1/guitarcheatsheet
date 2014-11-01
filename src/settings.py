@@ -7,7 +7,7 @@ class Settings():
     """The settings class"""
 
     def __init__(self):
-        self.size = Size(1111, 450)
+        self.size = Size(1111, 470)
         self.canvasheight = 300
         self.offset = Pos(40, 20)
         self.necksize = Size(14, 6)

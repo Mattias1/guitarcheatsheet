@@ -44,9 +44,20 @@ class Application(Frame):
         self.dbPreset.onChange = lambda *args: self.onChangeAnything()
 
         self.cbNotes = Cb(self, text='Display notes')
+        self.cbNotes.width = 130
         self.cbNotes.locateFrom(self.canvas, H_COPY_RIGHT, V_BOTTOM)
-        self.cbNotes.onChange = lambda *args: self.onChangeAnything()
         self.cbNotes.checked = settings.displayNotes
+        self.cbNotes.onChange = lambda _, *args: self.onChangeAnything()
+
+        self.cbChordsInKey = Cb(self, text='Chords in key')
+        self.cbChordsInKey.locateFrom(self.cbNotes, H_COPY_LEFT, V_BOTTOM)
+        self.cbChordsInKey.checked = True
+        self.cbChordsInKey.onChange = lambda _, *args: self.onChangeAnything()
+
+        self.checkMultiple = Cb(self, text='Multiple highlights')
+        self.checkMultiple.width = self.cbNotes.width
+        self.checkMultiple.locateFrom(self.cbChordsInKey, H_COPY_LEFT, V_BOTTOM)
+        self.checkMultiple.onChange = lambda _, *args: self.onChangeAnything()
 
         self.btnQuit = Btn(self, text='Quit', command=self.quit)
         self.btnQuit.locateInside(self, H_RIGHT, V_BOTTOM)
@@ -57,15 +68,16 @@ class Application(Frame):
 
         self.mainWindow = MainWin(settings, self)
         self.nrOfChords = 0
-        self.getChordDetails(0, 'c')
         self.onChangeAnything()
 
         self.master.after(int(self.settings.fps_inv * 1000), self.loop)
 
     def onChangeAnything(self):
         """This method is called whenever a control changed value"""
+        self.getChordDetails(0, 'a') # Get the correct length
         if self.changeWithoutEvent:
             return
+
         # Scale and key
         scale = Scale.default
         if self.dbScale.selectedValue == 'pentatonic':
@@ -94,14 +106,27 @@ class Application(Frame):
         self.mainWindow.change(key, scale, necksize, [Key.str2note(c) for c in tuning], highlightSet, displayNotes)
 
     def getChordDetails(self, i, key):
-        chords = [
-            key,          [0, 4, 7],     # Major
-            key + 'm',    [0, 3, 7],     # Minor
-            key + 'dim',  [0, 3, 6],     # dim
-            key + '7',    [0, 4, 7, 10], # 7
-            key + 'm7',   [0, 3, 7, 10], # Minor 7
-            key + 'maj7', [0, 4, 7, 11]  # Major 7
-        ]
+        helper = Key.str2note(key)
+        k = lambda n: Key.note2str((helper + n) % 12)
+        if self.cbChordsInKey.checked:
+            chords = [
+                k(0)  + ' (i)',       [0, 4, 7],     # C
+                k(2)  + 'm (ii)',     [2, 5, 9],     # Dm
+                k(4)  + 'm (iii)',    [4, 7, 11],    # Em
+                k(5)  + ' (iv)',      [5, 9, 12],    # F
+                k(7)  + ' (v)',       [7, 11, 2],    # G7
+                k(9)  + 'm (vi)',     [9, 12, 4],    # Am
+                k(11) + 'dim (vii)',  [11, 2, 5]     # Bdim
+            ]
+        else:
+            chords = [
+                key,          [0, 4, 7],     # Major
+                key + 'm',    [0, 3, 7],     # Minor
+                key + 'dim',  [0, 3, 6],     # dim
+                key + '7',    [0, 4, 7, 10], # 7
+                key + 'm7',   [0, 3, 7, 10], # Minor 7
+                key + 'maj7', [0, 4, 7, 11]  # Major 7
+            ]
         self.nrOfChords = len(chords) // 2
         return (chords[2 * i], chords[2 * i + 1])
 
@@ -115,27 +140,49 @@ class Application(Frame):
         for i in range(self.nrOfChords):
             self.addChordCb(key, i, i==0)
 
-        # Check the previously checked cb's
+        # Check the previously checked cb's (and discard old checkbox)
         if copy:
             self.changeWithoutEvent = True
             for i, cb in enumerate(self.chordCbs):
-                cb.checked = copy[i].checked
+                if len(copy) > i:
+                    cb.checked = copy[i].checked
+                    copy[i].destroy()
             self.changeWithoutEvent = False
 
-    def addChordCb(self, key, i, first=False):
-        name, noteList = self.getChordDetails(i, key)
+    def addChordCb(self, key, index, first=False):
+        columnHeight = 7
+        name, noteList = self.getChordDetails(index, key)
         offset = Key.str2note(key)
         text = '{}: '.format(name)
         for i in noteList:
             text += Key.note2str((i + offset) % 12) + ' '
 
         cb = Cb(self, text=text)
+        cb.width = 130
         if first:
-            cb.place(x=700, y=self.canvas.y + self.canvas.height + 10)
+            cb.place(x=670, y=self.canvas.y + self.canvas.height + 10)
+        elif index % columnHeight == 0:
+            cb.locateFrom(self.chordCbs[index - 6], H_RIGHT, V_COPY_TOP, 10)
         else:
             cb.locateFrom(self.chordCbs[-1], H_COPY_LEFT, V_BOTTOM, 2)
-        cb.onChange = lambda *args: self.onChangeAnything()
+        cb.onChange = self.chordCbOnChange
         self.chordCbs.append(cb)
+
+    def chordCbOnChange(self, cbMe, *args):
+        if self.changeWithoutEvent:
+            return
+
+        temp = self.changeWithoutEvent
+        self.changeWithoutEvent = True
+
+        if not self.checkMultiple.checked:
+            for cb in self.chordCbs:
+                if cb != cbMe:
+                    cb.checked = False
+
+        self.changeWithoutEvent = temp
+
+        self.onChangeAnything()
 
     def onMouseDown(self, event):
         self.mainWindow.onMouseDown(Pos(event.x, event.y), event.num)
