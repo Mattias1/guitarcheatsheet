@@ -46,3 +46,50 @@ class Scale():
                 return i + 1
         return -1
 
+
+class Chord():
+    """The class representing a chord"""
+    def __init__(self, *notes):
+        # The notes are supposed to be a series of integers in [0, 11] with the base note as first element
+        assert len(notes) > 2 
+        self.notes = list(notes)
+        self._name = None
+
+    @property
+    def name(self):
+        if not self._name:
+            self._name = self.getName()
+        return self._name
+
+    def getName(self):
+        """Find the name of a chord"""
+        base = Key.note2str(self.notes[0])
+        l = sorted(self.transpose(-self.notes[0]).notes)
+
+        ext = '?'
+        if l == [0, 4, 7]: ext = ''
+        elif l == [0, 3, 7]: ext = 'm'
+        elif l == [0, 3, 6]: ext = 'dim'
+        elif l == [0, 4, 7, 10]: ext = '7'
+        elif l == [0, 3, 7, 10]: ext = 'm7'
+        elif l == [0, 4, 7, 11]: ext = 'maj7'
+
+        print("l" + str(l))
+
+        return base + ext
+
+    @staticmethod
+    def fromScale(scale, *indices):
+        noteList = [scale[i] for i in list(*indices)]
+        return Chord(*noteList)
+
+    def transpose(self, difference):
+        noteList = [n - difference for n in self.notes]
+        return Chord(*noteList)
+
+    def __str__(self):
+        result = self.name + ':'
+        for n in self.notes:
+            result += ' ' + Key.note2str(n)
+        return result
+
