@@ -74,7 +74,8 @@ class Chord():
         elif l == [0, 3, 7, 10]: ext = 'm7'
         elif l == [0, 4, 7, 11]: ext = 'maj7'
 
-        print("l" + str(l))
+        if ext == '?':
+            print('UNKNOWN CHORD - l: {}, notes: {}, transpose: {}'.format(l, self.notes, self.transpose(-self.notes[0]).notes))
 
         return base + ext
 
@@ -84,7 +85,7 @@ class Chord():
         return Chord(*noteList)
 
     def transpose(self, difference):
-        noteList = [n - difference for n in self.notes]
+        noteList = [(n + difference + 12) % 12 for n in self.notes]
         return Chord(*noteList)
 
     def __str__(self):

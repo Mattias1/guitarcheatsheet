@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter.ttk import *
 from mattycontrols.MattyControls import *
 from .mainwin import MainWin
-from .key import Key, Scale
+from .key import Key, Scale, Chord
 from .settings import Settings, Pos, Size
 
 
@@ -74,7 +74,7 @@ class Application(Frame):
 
     def onChangeAnything(self):
         """This method is called whenever a control changed value"""
-        self.getChordDetails(0, 'a') # Get the correct length
+        self.getChordDetails(0, 'a') # Set the correct length
         if self.changeWithoutEvent:
             return
 
@@ -97,38 +97,37 @@ class Application(Frame):
         # Chords text and highlight
         self.setChordsText()
         highlightSet = set()
-        offset = Key.str2note(key)
         for i in range(self.nrOfChords):
             if self.chordCbs[i].checked:
-                highlightSet |= {(j + offset) % 12 for j in self.getChordDetails(i, key)[1]}
+                highlightSet |= set(self.getChordDetails(i, key).notes)
 
         # Update the picture
         self.mainWindow.change(key, scale, necksize, [Key.str2note(c) for c in tuning], highlightSet, displayNotes)
 
     def getChordDetails(self, i, key):
-        helper = Key.str2note(key)
-        k = lambda n: Key.note2str((helper + n) % 12)
         if self.cbChordsInKey.checked:
             chords = [
-                k(0)  + ' (i)',       [0, 4, 7],     # C
-                k(2)  + 'm (ii)',     [2, 5, 9],     # Dm
-                k(4)  + 'm (iii)',    [4, 7, 11],    # Em
-                k(5)  + ' (iv)',      [5, 9, 12],    # F
-                k(7)  + ' (v)',       [7, 11, 2],    # G7
-                k(9)  + 'm (vi)',     [9, 12, 4],    # Am
-                k(11) + 'dim (vii)',  [11, 2, 5]     # Bdim
+                Chord(0, 4, 7),     # C
+                Chord(2, 5, 9),     # Dm
+                Chord(4, 7, 11),    # Em
+                Chord(5, 9, 12),    # F
+                Chord(7, 11, 2),    # G7
+                Chord(9, 12, 4),    # Am
+                Chord(11, 2, 5)     # Bdim
             ]
         else:
             chords = [
-                key,          [0, 4, 7],     # Major
-                key + 'm',    [0, 3, 7],     # Minor
-                key + 'dim',  [0, 3, 6],     # dim
-                key + '7',    [0, 4, 7, 10], # 7
-                key + 'm7',   [0, 3, 7, 10], # Minor 7
-                key + 'maj7', [0, 4, 7, 11]  # Major 7
+                Chord(0, 4, 7),     # Major
+                Chord(0, 3, 7),     # Minor
+                Chord(0, 3, 6),     # dim
+                Chord(0, 4, 7, 10), # 7
+                Chord(0, 3, 7, 10), # Minor 7
+                Chord(0, 4, 7, 11)  # Major 7
             ]
-        self.nrOfChords = len(chords) // 2
-        return (chords[2 * i], chords[2 * i + 1])
+        self.nrOfChords = len(chords)
+
+        base = Key.str2note(key)
+        return chords[i].transpose(base)
 
     def setChordsText(self):
         # Init
@@ -151,13 +150,9 @@ class Application(Frame):
 
     def addChordCb(self, key, index, first=False):
         columnHeight = 7
-        name, noteList = self.getChordDetails(index, key)
-        offset = Key.str2note(key)
-        text = '{}: '.format(name)
-        for i in noteList:
-            text += Key.note2str((i + offset) % 12) + ' '
+        chord = self.getChordDetails(index, key)
 
-        cb = Cb(self, text=text)
+        cb = Cb(self, text=str(chord))
         cb.width = 130
         if first:
             cb.place(x=670, y=self.canvas.y + self.canvas.height + 10)
