@@ -70,9 +70,12 @@ class Chord():
         if l == [0, 4, 7]: ext = ''
         elif l == [0, 3, 7]: ext = 'm'
         elif l == [0, 3, 6]: ext = 'dim'
+        elif l == [0, 4, 5, 7]: ext = 'sus4'
+        elif l == [0, 2, 4, 7]: ext = 'sus2'
         elif l == [0, 4, 7, 10]: ext = '7'
         elif l == [0, 3, 7, 10]: ext = 'm7'
         elif l == [0, 4, 7, 11]: ext = 'maj7'
+        elif l == [0, 2, 3, 7]: ext = 'm2'
 
         if ext == '?':
             print('UNKNOWN CHORD - l: {}, notes: {}, transpose: {}'.format(l, self.notes, self.transpose(-self.notes[0]).notes))

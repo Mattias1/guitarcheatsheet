@@ -120,9 +120,12 @@ class Application(Frame):
                 Chord(0, 4, 7),     # Major
                 Chord(0, 3, 7),     # Minor
                 Chord(0, 3, 6),     # dim
+                Chord(0, 4, 5, 7),  # sus 4
+                Chord(0, 2, 4, 7),  # sus 2
                 Chord(0, 4, 7, 10), # 7
                 Chord(0, 3, 7, 10), # Minor 7
-                Chord(0, 4, 7, 11)  # Major 7
+                Chord(0, 4, 7, 11), # Major 7
+                Chord(0, 2, 3, 7)   # Minor 2
             ]
         self.nrOfChords = len(chords)
 
@@ -142,10 +145,10 @@ class Application(Frame):
         # Check the previously checked cb's (and discard old checkbox)
         if copy:
             self.changeWithoutEvent = True
-            for i, cb in enumerate(self.chordCbs):
-                if len(copy) > i:
-                    cb.checked = copy[i].checked
-                    copy[i].destroy()
+            for i, cb in enumerate(copy):
+                if len(self.chordCbs) > i:
+                    self.chordCbs[i].checked = cb.checked
+                cb.destroy()
             self.changeWithoutEvent = False
 
     def addChordCb(self, key, index, first=False):
@@ -157,7 +160,7 @@ class Application(Frame):
         if first:
             cb.place(x=670, y=self.canvas.y + self.canvas.height + 10)
         elif index % columnHeight == 0:
-            cb.locateFrom(self.chordCbs[index - 6], H_RIGHT, V_COPY_TOP, 10)
+            cb.locateFrom(self.chordCbs[index - columnHeight], H_RIGHT, V_COPY_TOP, 10)
         else:
             cb.locateFrom(self.chordCbs[-1], H_COPY_LEFT, V_BOTTOM, 2)
         cb.onChange = self.chordCbOnChange
