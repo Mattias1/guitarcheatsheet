@@ -120,8 +120,8 @@ class Application(Frame):
                 Chord(0, 4, 7),     # Major
                 Chord(0, 3, 7),     # Minor
                 Chord(0, 3, 6),     # dim
-                Chord(0, 4, 5, 7),  # sus 4
-                Chord(0, 2, 4, 7),  # sus 2
+                Chord(0, 5, 7),     # sus 4
+                Chord(0, 2, 7),     # sus 2
                 Chord(0, 4, 7, 10), # 7
                 Chord(0, 3, 7, 10), # Minor 7
                 Chord(0, 4, 7, 11), # Major 7

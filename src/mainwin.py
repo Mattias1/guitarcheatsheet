@@ -47,7 +47,7 @@ class MainWin(Win):
             nr = st.tuning[i]
             clr = cl.highlightbg if nr in self.highlightSet else cl.selectionbg
             idx = self.key.getIndex(nr)
-            if idx > -1: # TODO !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            if idx > -1 or nr in self.highlightSet:
                 self.drawRect(clr, st.offset + (-sqWidth, i * h), Size(sqWidth, st.sqsize.h))
                 for j in range(fadeWidth):
                     c = cl.hexlerp(cl.bg, clr, 1 - j / fadeWidth)
