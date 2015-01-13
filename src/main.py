@@ -17,7 +17,9 @@ class Application(Frame):
 
         self.canvas = Cnvs(master, bd=-2)
         self.canvas.bind('<Button>', self.onMouseDown)
-        self.canvas.bind('<Motion>', self.onMouseMove)
+        self.canvas.bind('<B1-Motion>', self.createOnMouseMove(1))
+        self.canvas.bind('<B2-Motion>', self.createOnMouseMove(2))
+        self.canvas.bind('<B3-Motion>', self.createOnMouseMove(3))
         self.canvas.bind('<ButtonRelease>', self.onMouseUp)
         self.master.bind('<Key>', self.onKeyDown)
         self.master.bind('<KeyRelease>', self.onKeyUp)
@@ -185,8 +187,8 @@ class Application(Frame):
     def onMouseDown(self, event):
         self.mainWindow.onMouseDown(Pos(event.x, event.y), event.num)
 
-    def onMouseMove(self, event):
-        self.mainWindow.onMouseMove(Pos(event.x, event.y), event.num)
+    def createOnMouseMove(self, btnNr):
+        return lambda event: self.mainWindow.onMouseMove(Pos(event.x, event.y), btnNr)
 
     def onMouseUp(self, event):
         self.mainWindow.onMouseUp(Pos(event.x, event.y), event.num)
