@@ -2,10 +2,10 @@ class Colors():
     """The colors class"""
 
     def __init__(self):
-        self.bg = "#272822"
+        self.bg = "#524540"
         self.text = "#eeeeee"
-        self.selectionbg = "#474842"
-        self.highlightbg = "#777872"
+        self.selectionbg = "#343030"
+        self.highlightbg = "#807878"
 
     def load(self):
         """Load all the colors from json file"""
