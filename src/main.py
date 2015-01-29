@@ -114,9 +114,12 @@ class Application(Frame):
                 Chord(2, 5, 9),     # Dm
                 Chord(4, 7, 11),    # Em
                 Chord(5, 9, 12),    # F
-                Chord(7, 11, 2),    # G7
+                Chord(7, 11, 2),    # G
                 Chord(9, 12, 4),    # Am
-                Chord(11, 2, 5)     # Bdim
+                Chord(11, 2, 5),    # Bdim
+                Chord(7, 11, 2, 5), # G7
+                Chord(9, 12, 4, 7), # Am7
+                Chord(0, 4, 7, 11), # Major 7
             ]
         else:
             chords = [

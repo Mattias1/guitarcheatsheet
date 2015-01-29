@@ -37,7 +37,7 @@ class Scale():
     """Some scales"""
     default = [0, 2, 4, 5, 7, 9, 11]
     pentatonic = [0, 2, 4, 7, 9]
-    
+
     @staticmethod
     def getIndex(scale, base, note):
         n = (note + 12 - base) % 12
