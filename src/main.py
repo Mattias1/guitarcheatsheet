@@ -36,7 +36,7 @@ class Application(Frame):
         self.dbKey.addLabel('Key: ')
         self.dbKey.onChange = lambda *args: self.onChangeAnything()
 
-        self.dbScale = Db(self, ['default', 'pentatonic'], 0)
+        self.dbScale = Db(self, ['default', 'pentatonic', 'blues'], 0)
         self.dbScale.locateFrom(self.dbKey.label, H_COPY_LEFT, V_BOTTOM)
         self.dbScale.addLabel('Scale: ')
         self.dbScale.onChange = lambda *args: self.onChangeAnything()
@@ -85,6 +85,8 @@ class Application(Frame):
         scale = Scale.default
         if self.dbScale.selectedValue == 'pentatonic':
             scale = Scale.pentatonic
+        elif self.dbScale.selectedValue == 'blues':
+            scale = Scale.blues
         key = self.dbKey.selectedValue
         # Necksize and tuning
         necksize = Size(14, 6)
@@ -119,7 +121,10 @@ class Application(Frame):
                 Chord(11, 2, 5),    # Bdim
                 Chord(7, 11, 2, 5), # G7
                 Chord(9, 12, 4, 7), # Am7
-                Chord(0, 4, 7, 11), # Major 7
+                Chord(0, 4, 7, 11), # Cmaj7
+                Chord(5, 9, 12, 4), # Fmaj7
+                Chord(9, 12, 4, 11),# Am2
+                Chord(2, 5, 9, 4)  # Dm2
             ]
         else:
             chords = [

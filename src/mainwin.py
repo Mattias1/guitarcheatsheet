@@ -52,7 +52,9 @@ class MainWin(Win):
                 for j in range(fadeWidth):
                     c = cl.hexlerp(cl.bg, clr, 1 - j / fadeWidth)
                     self.drawRect(c, st.offset + (-sqWidth - j, i * h), Size(1, st.sqsize.h))
-            self.drawString(Key.note2str(nr), cl.text, st.offset + (-9, i * h + h // 2), "e")
+            s = Key.note2str(nr % 12) if st.displayNotes else str(idx)
+            if s != '-1':
+                self.drawString(s, cl.text, st.offset + (-9, i * h + h // 2), "e")
 
         # Draw guitar neck
         for i in range(st.necksize.h + 1): # Horizontal lines
