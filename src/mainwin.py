@@ -65,12 +65,12 @@ class MainWin(Win):
         for i in [5, 7, 10, 12]: # Mark some fret numbers
             self.drawString(str(i), cl.text, st.offset + (i * w - w // 2, st.necksize.h * h + 3), "n")
 
-    def change(self, key, scale, necksize, tuning, highlightSet, displayNotes):
+    def change(self, key, scale, mode, necksize, tuning, highlightSet, displayNotes):
         """Call this function to update some settings"""
         self.settings.necksize = necksize
         self.settings.tuning = tuning
         self.settings.displayNotes = displayNotes
-        self.key = Key(key, scale)
+        self.key = Key(key, scale, mode)
         self.highlightSet = highlightSet
 
         self.draw()

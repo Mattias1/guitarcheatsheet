@@ -1,12 +1,10 @@
 class Key():
     """The key class"""
 
-    def __init__(self, startnote, scale=None):
+    def __init__(self, startnote, scale=None, mode=None):
         self.base = Key.str2note(startnote.upper())
-        if scale == None:
-            self.scale = Scale.default
-        else:
-            self.scale = scale
+        self.scale = scale or Scale.default
+        self.mode = mode or Mode.ionian
 
     def __getitem__(i):
         return self.tones[i]
@@ -48,6 +46,19 @@ class Scale():
         return -1
 
 
+class Mode():
+    """Some modes"""
+    ionian     = [0, 2, 4, 5, 7, 9, 11, 12] # T-T-s-T-T-T-s
+    dorian     = [0, 2, 3, 5, 7, 9, 10, 12] # T-s-T-T-T-s-T
+    phrygian   = [0, 1, 3, 5, 7, 8, 10, 12] # s-T-T-T-s-T-T
+    lydian     = [0, 2, 4, 6, 7, 9, 11, 12] # T-T-T-s-T-T-s
+    mixolydian = [0, 2, 4, 5, 7, 9, 10, 12] # T-T-s-T-T-s-T
+    aeolian    = [0, 2, 3, 5, 7, 8, 10, 12] # T-s-T-T-s-T-T
+    locrian    = [0, 1, 3, 5, 6, 8, 10, 12] # s-T-T-s-T-T-T
+
+    allModes   = [ionian, dorian, phrygian, lydian, mixolydian, aeolian, locrian]
+
+
 class Chord():
     """The class representing a chord"""
     def __init__(self, *notes):
@@ -85,7 +96,13 @@ class Chord():
 
     @staticmethod
     def fromScale(scale, *indices):
-        noteList = [scale[i] for i in list(*indices)]
+        print(list(indices))
+        noteList = [scale[i - 1] for i in list(indices)]
+        return Chord(*noteList)
+
+    @staticmethod
+    def fromMode(mode, *indices):
+        noteList = [mode[i - 1] for i in list(indices)]
         return Chord(*noteList)
 
     def transpose(self, difference):

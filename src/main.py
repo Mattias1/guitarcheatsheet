@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter.ttk import *
 from mattycontrols.MattyControls import *
 from .mainwin import MainWin
-from .key import Key, Scale, Chord
+from .key import Key, Scale, Mode, Chord
 from .settings import Settings, Pos, Size
 
 
@@ -41,8 +41,14 @@ class Application(Frame):
         self.dbScale.addLabel('Scale: ')
         self.dbScale.onChange = lambda *args: self.onChangeAnything()
 
+        modes = ['I. Ionian', 'II. Dorian', 'III. Phrygian', 'IV. Lydian', 'V. Mixolydian', 'VI. Aeolian', 'VII. Locrian' ];
+        self.dbMode = Db(self, modes, 0)
+        self.dbMode.locateFrom(self.dbScale.label, H_COPY_LEFT, V_BOTTOM)
+        self.dbMode.addLabel('Mode: ')
+        self.dbMode.onChange = lambda *args: self.onChangeAnything()
+
         self.dbPreset = Db(self, ['guitar', 'soprano ukelele', 'tenor ukelele'], 0)
-        self.dbPreset.locateFrom(self.dbScale.label, H_COPY_LEFT, V_BOTTOM)
+        self.dbPreset.locateFrom(self.dbMode.label, H_COPY_LEFT, V_BOTTOM)
         self.dbPreset.addLabel('Preset: ')
         self.dbPreset.onChange = lambda *args: self.onChangeAnything()
 
@@ -77,17 +83,18 @@ class Application(Frame):
 
     def onChangeAnything(self):
         """This method is called whenever a control changed value"""
-        self.getChordDetails(0, 'a') # Set the correct length
+        self.getChordDetails(0, 'a', Mode.ionian) # Set the correct length
         if self.changeWithoutEvent:
             return
 
-        # Scale and key
+        # Key, scale and mode
+        key = self.dbKey.selectedValue
         scale = Scale.default
         if self.dbScale.selectedValue == 'pentatonic':
             scale = Scale.pentatonic
         elif self.dbScale.selectedValue == 'blues':
             scale = Scale.blues
-        key = self.dbKey.selectedValue
+        mode = Mode.allModes[self.dbMode.selectedIndex]
         # Necksize and tuning
         necksize = Size(14, 6)
         tuning = ['E','B','G','D','A','E']
@@ -97,34 +104,36 @@ class Application(Frame):
         elif self.dbPreset.selectedValue == 'tenor ukelele':
             necksize = Size(14, 4)
             tuning = ['G#', 'Eb', 'B', 'F#']
-        # Display notes
-        displayNotes = self.cbNotes.checked
         # Chords text and highlight
-        self.setChordsText()
+        displayNotes = self.cbNotes.checked
+        self.updateChordCheckboxes(mode)
         highlightSet = set()
         for i in range(self.nrOfChords):
             if self.chordCbs[i].checked:
-                highlightSet |= set(self.getChordDetails(i, key).notes)
+                highlightSet |= set(self.getChordDetails(i, key, mode).notes)
 
         # Update the picture
-        self.mainWindow.change(key, scale, necksize, [Key.str2note(c) for c in tuning], highlightSet, displayNotes)
+        self.mainWindow.change(key, scale, mode, necksize, [Key.str2note(c) for c in tuning], highlightSet, displayNotes)
 
-    def getChordDetails(self, i, key):
+    def getChordDetails(self, i, key, mode):
+        def chord(*indices):
+            return Chord.fromMode(mode, *list(indices))
+
         if self.cbChordsInKey.checked:
             chords = [
-                Chord(0, 4, 7),     # C
-                Chord(2, 5, 9),     # Dm
-                Chord(4, 7, 11),    # Em
-                Chord(5, 9, 12),    # F
-                Chord(7, 11, 2),    # G
-                Chord(9, 12, 4),    # Am
-                Chord(11, 2, 5),    # Bdim
-                Chord(7, 11, 2, 5), # G7
-                Chord(9, 12, 4, 7), # Am7
-                Chord(0, 4, 7, 11), # Cmaj7
-                Chord(5, 9, 12, 4), # Fmaj7
-                Chord(9, 12, 4, 11),# Am2
-                Chord(2, 5, 9, 4)  # Dm2
+                chord(1, 3, 5),     # C
+                chord(2, 4, 6),     # Dm
+                chord(3, 5, 7),     # Em
+                chord(4, 6, 8),     # F
+                chord(5, 7, 2),     # G
+                chord(6, 8, 3),     # Am
+                chord(7, 2, 4),     # Bdim
+                chord(5, 7, 2, 4),  # G7
+                chord(6, 8, 3, 5),  # Am7
+                chord(1, 3, 5, 7),  # Cmaj7
+                chord(4, 6, 8, 3),  # Fmaj7
+                chord(6, 8, 3, 7),  # Am2
+                chord(2, 4, 6, 3)   # Dm2
             ]
         else:
             chords = [
@@ -143,7 +152,7 @@ class Application(Frame):
         base = Key.str2note(key)
         return chords[i].transpose(base)
 
-    def setChordsText(self):
+    def updateChordCheckboxes(self, mode):
         # Init
         key = self.dbKey.selectedValue
         copy = self.chordCbs
@@ -151,7 +160,7 @@ class Application(Frame):
 
         # Add the new cb's
         for i in range(self.nrOfChords):
-            self.addChordCb(key, i, i==0)
+            self.addChordCb(key, i, mode, i==0)
 
         # Check the previously checked cb's (and discard old checkbox)
         if copy:
@@ -162,9 +171,9 @@ class Application(Frame):
                 cb.destroy()
             self.changeWithoutEvent = False
 
-    def addChordCb(self, key, index, first=False):
+    def addChordCb(self, key, index, mode, first=False):
         columnHeight = 7
-        chord = self.getChordDetails(index, key)
+        chord = self.getChordDetails(index, key, mode)
 
         cb = Cb(self, text=str(chord))
         cb.width = 130
