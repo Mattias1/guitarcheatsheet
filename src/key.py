@@ -3,7 +3,7 @@ class Key():
 
     def __init__(self, startnote, scale=None, mode=None):
         self.base = Key.str2note(startnote.upper())
-        self.scale = scale or Scale.default
+        self.scale = scale or Scale.major
         self.mode = mode or Mode.ionian
 
     def __getitem__(i):
@@ -33,7 +33,8 @@ class Key():
 
 class Scale():
     """Some scales"""
-    default = [0, 2, 4, 5, 7, 9, 11]
+    major = [0, 2, 4, 5, 7, 9, 11]
+    minor = [0, 2, 3, 5, 7, 8, 10]
     pentatonic = [0, 2, 4, 7, 9]
     blues = [0, 2, 3, 4, 7, 9]
 
@@ -87,6 +88,7 @@ class Chord():
         elif l == [0, 4, 7, 10]: ext = '7'
         elif l == [0, 3, 7, 10]: ext = 'm7'
         elif l == [0, 4, 7, 11]: ext = 'maj7'
+        elif l == [0, 2, 4, 7]: ext = '2'
         elif l == [0, 2, 3, 7]: ext = 'm2'
 
         if ext == '?':

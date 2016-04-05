@@ -36,7 +36,7 @@ class Application(Frame):
         self.dbKey.addLabel('Key: ')
         self.dbKey.onChange = lambda *args: self.onChangeAnything()
 
-        self.dbScale = Db(self, ['default', 'pentatonic', 'blues'], 0)
+        self.dbScale = Db(self, ['Major', 'Minor', 'Pentatonic', 'Blues'], 0)
         self.dbScale.locateFrom(self.dbKey.label, H_COPY_LEFT, V_BOTTOM)
         self.dbScale.addLabel('Scale: ')
         self.dbScale.onChange = lambda *args: self.onChangeAnything()
@@ -47,7 +47,7 @@ class Application(Frame):
         self.dbMode.addLabel('Mode: ')
         self.dbMode.onChange = lambda *args: self.onChangeAnything()
 
-        self.dbPreset = Db(self, ['guitar', 'soprano ukelele', 'tenor ukelele'], 0)
+        self.dbPreset = Db(self, ['Guitar', 'Soprano ukelele', 'Tenor ukelele'], 0)
         self.dbPreset.locateFrom(self.dbMode.label, H_COPY_LEFT, V_BOTTOM)
         self.dbPreset.addLabel('Preset: ')
         self.dbPreset.onChange = lambda *args: self.onChangeAnything()
@@ -89,19 +89,21 @@ class Application(Frame):
 
         # Key, scale and mode
         key = self.dbKey.selectedValue
-        scale = Scale.default
-        if self.dbScale.selectedValue == 'pentatonic':
+        scale = Scale.major
+        if self.dbScale.selectedValue == 'Minor':
+            scale = Scale.minor
+        elif self.dbScale.selectedValue == 'Pentatonic':
             scale = Scale.pentatonic
-        elif self.dbScale.selectedValue == 'blues':
+        elif self.dbScale.selectedValue == 'Blues':
             scale = Scale.blues
         mode = Mode.allModes[self.dbMode.selectedIndex]
         # Necksize and tuning
         necksize = Size(14, 6)
         tuning = ['E','B','G','D','A','E']
-        if self.dbPreset.selectedValue == 'soprano ukelele':
+        if self.dbPreset.selectedValue == 'Soprano ukelele':
             necksize = Size(12, 4)
             tuning = ['A','E','C','G']
-        elif self.dbPreset.selectedValue == 'tenor ukelele':
+        elif self.dbPreset.selectedValue == 'Tenor ukelele':
             necksize = Size(14, 4)
             tuning = ['G#', 'Eb', 'B', 'F#']
         # Chords text and highlight
@@ -145,7 +147,8 @@ class Application(Frame):
                 Chord(0, 4, 7, 10), # 7
                 Chord(0, 3, 7, 10), # Minor 7
                 Chord(0, 4, 7, 11), # Major 7
-                Chord(0, 2, 3, 7)   # Minor 2
+                Chord(0, 4, 7, 14), # Major 2
+                Chord(0, 3, 7, 14)  # Minor 2
             ]
         self.nrOfChords = len(chords)
 
