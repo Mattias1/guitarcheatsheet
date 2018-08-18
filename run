@@ -1,5 +1,5 @@
 #!python
-"""Top level script which runs fate."""
+"""Top level script which runs the guitar cheat sheet."""
 
 import os
 import sys
