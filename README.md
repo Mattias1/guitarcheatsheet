@@ -13,3 +13,7 @@ It should install `tkinter` automatically. To install `PIL`, type `pip install P
 For ubuntu: `sudo apt-get install python3 python3-pil.imagetk python3-tk`.
 
 Once installed you can run with `python3 run`.
+
+Create a binary
+---------------
+Run `pyinstaller -F run` (after installing pyinstaller with `pip install pyinstaller` if necessary)
