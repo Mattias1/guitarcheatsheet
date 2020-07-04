@@ -62,7 +62,7 @@ class MainWin(Win):
         for i in range(st.necksize.w + 1): # Vertical lines
             self.drawLine(cl.text, st.offset + (i * w, 0), st.offset + (i * w, st.necksize.h * h))
         self.drawLine(cl.text, st.offset + (-3, 0), st.offset + (-3, st.necksize.h * h))
-        for i in [5, 7, 10, 12]: # Mark some fret numbers
+        for i in [3, 5, 7, 9, 12]: # Mark some fret numbers
             self.drawString(str(i), cl.text, st.offset + (i * w - w // 2, st.necksize.h * h + 3), "n")
 
     def change(self, key, scale, mode, necksize, tuning, highlightSet, displayNotes):

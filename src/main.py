@@ -36,7 +36,7 @@ class Application(Frame):
         self.dbKey.addLabel('Key: ')
         self.dbKey.onChange = lambda *args: self.onChangeAnything()
 
-        self.dbScale = Db(self, ['Major', 'Minor', 'Pentatonic', 'Blues'], 0)
+        self.dbScale = Db(self, ['Major', 'Minor', 'Pentatonic', 'Blues I', 'Blues II'], 0)
         self.dbScale.locateFrom(self.dbKey.label, H_COPY_LEFT, V_BOTTOM)
         self.dbScale.addLabel('Scale: ')
         self.dbScale.onChange = lambda *args: self.onChangeAnything()
@@ -94,8 +94,10 @@ class Application(Frame):
             scale = Scale.minor
         elif self.dbScale.selectedValue == 'Pentatonic':
             scale = Scale.pentatonic
-        elif self.dbScale.selectedValue == 'Blues':
-            scale = Scale.blues
+        elif self.dbScale.selectedValue == 'Blues I':
+            scale = Scale.blues1
+        elif self.dbScale.selectedValue == 'Blues II':
+            scale = Scale.blues2
         mode = Mode.allModes[self.dbMode.selectedIndex]
         # Necksize and tuning
         necksize = Size(14, 6)
